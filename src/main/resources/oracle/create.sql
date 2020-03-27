@@ -1,113 +1,69 @@
+CREATE SEQUENCE seq_sex START WITH 1;
+
 create table sex (
-  id number(10) not null,
-  name varchar2(20) not null,
-  primary key (id)
-);
+  id number DEFAULT seq_sex.nextval NOT NULL ,
+  name varchar2(20) not null); 
 
--- Generate ID using sequence and trigger
-create sequence sex_seq start with 1 increment by 1;
+ALTER TABLE sex ADD (
+  CONSTRAINT pk_sex PRIMARY KEY (ID));
 
-create or replace trigger sex_seq_tr
- before insert on sex for each row
- when (new.id is null)
-begin
- select sex_seq.nextval into :new.id from dual;
-end;
-/
-
+CREATE SEQUENCE seq_technologies START WITH 1;
 create table technologies (
-  id number(10) not null,
-  name varchar2(20) not null,
-  primary key (id)
+  id  number DEFAULT seq_technologies.nextval NOT NULL,
+  name varchar2(20) not null
 );
+ALTER TABLE technologies ADD (
+  CONSTRAINT pk_technologies PRIMARY KEY (ID));
 
--- Generate ID using sequence and trigger
-create sequence technologies_seq start with 1 increment by 1;
 
-create or replace trigger technologies_seq_tr
- before insert on technologies for each row
- when (new.id is null)
-begin
- select technologies_seq.nextval into :new.id from dual;
-end;
-/
-
+CREATE SEQUENCE seq_type_of_contact START WITH 1;
 create table type_of_contact (
-  id number(10) not null,
-  name varchar2(20) not null,
-  primary key (id)
+  id  number DEFAULT seq_type_of_contact.nextval NOT NULL,
+  name varchar2(20) not null
 );
+ALTER TABLE type_of_contact ADD (
+  CONSTRAINT pk_type_of_contact PRIMARY KEY (ID));
 
--- Generate ID using sequence and trigger
-create sequence type_of_contact_seq start with 1 increment by 1;
-
-create or replace trigger type_of_contact_seq_tr
- before insert on type_of_contact for each row
- when (new.id is null)
-begin
- select type_of_contact_seq.nextval into :new.id from dual;
-end;
-/
-
+CREATE SEQUENCE seq_people START WITH 1;
 create table people (
-  id number(10) not null,
+  id  number DEFAULT seq_people.nextval NOT NULL,
   last_name varchar2(50) not null,
   first_name varchar2(50) not null,
   middle_name varchar2(50),
   birthday date,
-  sex_id number(10),
-  primary key (id),
-  foreign key (sex_id) references sex (id)
-);
+  sex_id number);
+ALTER TABLE people ADD (
+  CONSTRAINT pk_people PRIMARY KEY (ID));
+ALTER TABLE people ADD (
+  CONSTRAINT fk_people_sex
+  FOREIGN KEY (sex_id) REFERENCES sex (id));
 
--- Generate ID using sequence and trigger
-create sequence people_seq start with 1 increment by 1;
 
-create or replace trigger people_seq_tr
- before insert on people for each row
- when (new.id is null)
-begin
- select people_seq.nextval into :new.id from dual;
-end;
-/
-
+CREATE SEQUENCE seq_people_technologies START WITH 1;
 create table people_technologies (
-  id number(10) not null,
-  person_id number(10) not null,
-  technology_id number(10) not null,
-  primary key (id),
-  foreign key (person_id) references people (id),
-  foreign key (technology_id) references technologies (id)
-);
+  id  number DEFAULT seq_people_technologies.nextval NOT NULL,
+  person_id number not null,
+  technology_id number not null);
+ALTER TABLE people_technologies ADD (
+  CONSTRAINT pk_people_technologies PRIMARY KEY (ID));
+ALTER TABLE people_technologies ADD (
+  CONSTRAINT fk_people_tech_people
+  FOREIGN KEY (person_id) REFERENCES people (id));
+ALTER TABLE people_technologies ADD (
+  CONSTRAINT fk_people_tech_tech
+  FOREIGN KEY (technology_id) REFERENCES people (id));
 
--- Generate ID using sequence and trigger
-create sequence people_technologies_seq start with 1 increment by 1;
-
-create or replace trigger people_technologies_seq_tr
- before insert on people_technologies for each row
- when (new.id is null)
-begin
- select people_technologies_seq.nextval into :new.id from dual;
-end;
-/
-
+CREATE SEQUENCE seq_contacts START WITH 1;
 create table contacts (
-  id number(10) not null,
-  person_id number(10) not null,
-  type_of_contact_id number(10) not null,
-  contact_value varchar2(50) not null,
-  primary key (id),
-  foreign key (person_id) references people (id),
-  foreign key (type_of_contact_id) references type_of_contact (id)
-);
-
--- Generate ID using sequence and trigger
-create sequence contacts_seq start with 1 increment by 1;
-
-create or replace trigger contacts_seq_tr
- before insert on contacts for each row
- when (new.id is null)
-begin
- select contacts_seq.nextval into :new.id from dual;
-end;
-/
+  id  number DEFAULT seq_contacts.nextval NOT NULL,
+  person_id number not null,
+  type_of_contact_id number not null,
+  contact_value varchar2(50) not null);
+ALTER TABLE contacts ADD (
+  CONSTRAINT pk_contacts PRIMARY KEY (ID));
+ALTER TABLE contacts ADD (
+  CONSTRAINT fk_contacts_people
+  FOREIGN KEY (person_id) REFERENCES people (id));
+ALTER TABLE contacts ADD (
+  CONSTRAINT fk_contacts_cont
+  FOREIGN KEY (type_of_contact_id) REFERENCES type_of_contact (id));
